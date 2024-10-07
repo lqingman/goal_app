@@ -15,7 +15,7 @@ const getGoals = asyncHandler(async (req, res) => {
 // @desc Set goals
 // @route POST /api/goals
 // @access Private
-const setGoals = asyncHandler(async (req, res) => {
+const setGoal = asyncHandler(async (req, res) => {
     if (!req.body.text) {
         res.status(400)
         throw new Error('Please enter a goal')
@@ -31,7 +31,7 @@ const setGoals = asyncHandler(async (req, res) => {
 // @desc Update goals
 // @route PUT /api/goals/:id
 // @access Private
-const updateGoals = asyncHandler(async (req, res) => {
+const updateGoal = asyncHandler(async (req, res) => {
     const goal = await Goal.findById(req.params.id)
 
     if (!goal) {
@@ -39,16 +39,14 @@ const updateGoals = asyncHandler(async (req, res) => {
         throw new Error('Goal not found')
     }
 
-    const user = await User.findById(req.user.id)
-
     // check for user
-    if (!user) {
+    if (!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
 
     // make sure the logged in user matches the goal user
-    if (goal.user.toString() !== user.id) {
+    if (goal.user.toString() !== req.user.id) {
         res.status(401)
         throw new Error('User not authorized to update goal')
     }
@@ -65,22 +63,22 @@ const updateGoals = asyncHandler(async (req, res) => {
 // @desc Delete goals
 // @route DELETE /api/goals/:id
 // @access Private
-const deleteGoals = asyncHandler(async (req, res) => {
+const deleteGoal = asyncHandler(async (req, res) => {
     const goal = await Goal.findById(req.params.id)
     if (!goal) {
         res.status(400)
         throw new Error('Goal not found')
     }
 
-    const user = await User.findById(req.user.id)
+
     // check for user
-    if (!user) {
+    if (!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
 
     // make sure the logged in user matches the goal user
-    if (goal.user.toString() !== user.id) {
+    if (goal.user.toString() !== req.user.id) {
         res.status(401)
         throw new Error('User not authorized to update goal')
     }
@@ -91,7 +89,7 @@ const deleteGoals = asyncHandler(async (req, res) => {
 
 module.exports = {
     getGoals,
-    setGoals,
-    updateGoals,
-    deleteGoals
+    setGoal,
+    updateGoal,
+    deleteGoal
 }
